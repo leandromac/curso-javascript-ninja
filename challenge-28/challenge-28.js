@@ -1,27 +1,100 @@
-  /*
-  No HTML:
-  - Crie um formulário com um input de texto que receberá um CEP e um botão
-  de submit;
-  - Crie uma estrutura HTML para receber informações de endereço:
-  "Logradouro, Bairro, Estado, Cidade e CEP." Essas informações serão
-  preenchidas com os dados da requisição feita no JS.
-  - Crie uma área que receberá mensagens com o status da requisição:
-  "Carregando, sucesso ou erro."
+(function(DOM){
+  'use strict';
 
-  No JS:
-  - O CEP pode ser entrado pelo usuário com qualquer tipo de caractere, mas
-  deve ser limpo e enviado somente os números para a requisição abaixo;
-  - Ao submeter esse formulário, deve ser feito um request Ajax para a URL:
-  "https://viacep.com.br/ws/[CEP]/json/", onde [CEP] será o CEP passado
-  no input criado no HTML;
-  - Essa requisição trará dados de um CEP em JSON. Preencha campos na tela
-  com os dados recebidos.
-  - Enquanto os dados são buscados, na área de mensagens de status, deve mostrar
-  a mensagem: "Buscando informações para o CEP [CEP]..."
-  - Se não houver dados para o CEP entrado, mostrar a mensagem:
-  "Não encontramos o endereço para o CEP [CEP]."
-  - Se houver endereço para o CEP digitado, mostre a mensagem:
-  "Endereço referente ao CEP [CEP]:"
-  - Utilize a lib DOM criada anteriormente para facilitar a manipulação e
-  adicionar as informações em tela.
-  */
+  function app() {
+    var $formCEP = new DOM('[data-js="form-cep"]');
+    var $inputCEP = new DOM('[data-js="input-cep"]');
+    var $address = new DOM('[data-js="address"]');
+    var $district = new DOM('[data-js="district"]');
+    var $city = new DOM('[data-js="city"]');
+    var $state = new DOM('[data-js="state"]');
+    var $code = new DOM('[data-js="code"]');
+    var $status = new DOM('[data-js="status"]');
+    var ajax = new XMLHttpRequest();
+    $formCEP.on('submit', handleSubmitFormCEP);
+
+    function handleSubmitFormCEP(event) {
+      event.preventDefault();
+      var url = getUrl();
+      ajax.open('GET', url);
+      ajax.send();
+      getMessage('loading');
+      ajax.addEventListener('readystatechange', handleReadyStateChange);
+    }
+
+    function getUrl() {
+      return replaceCEP('https://ws.apicep.com/cep/[CEP].json')
+    }
+
+    function clearCEP() {
+    return $inputCEP.get()[0].value.replace(/\D/g, '');
+    }
+
+    function handleReadyStateChange() {
+      if (isRequestOk()) {
+        getMessage('ok');
+        fillCEPField();
+      }
+    }
+
+    function isRequestOk() {
+      return ajax.readyState === 4 && ajax.status === 200;
+    }
+
+    function fillCEPField() {
+      var data = parseData();
+      if (!data) {
+        getMessage('error');
+        data = clearData();
+      }
+
+      $address.get()[0].textContent = data.address;
+      $district.get()[0].textContent = data.district;
+      $city.get()[0].textContent = data.city;
+      $state.get()[0].textContent = data.state;
+      $code.get()[0].textContent = data.code;
+    }
+
+    function clearData() {
+      return {
+        address: '-',
+        district: '-',
+        city: '-',
+        state: '-',
+        code: '-'
+      }
+    }
+
+    function parseData() {
+      var result;
+      try {
+        result = JSON.parse(ajax.responseText);
+      }
+      catch(e) {
+        result = null;
+      }
+      return result;
+    }
+
+    function getMessage(type) {
+      var messages = {
+        loading: replaceCEP('Buscando...'),
+        ok: replaceCEP('Resultado da pesquisa do CEP [CEP]. '),
+        error: replaceCEP('Não encontramos o endereço do [CEP]')
+      };
+      $status.get()[0].textContent = messages[type];
+    }
+
+    function replaceCEP(message) {
+      return message.replace('[CEP]', clearCEP());
+    }
+
+    return {
+      getMessage: getMessage,
+      replaceCEP: replaceCEP
+    };
+  }
+
+  window.app = app();
+  app();
+})(window.DOM);

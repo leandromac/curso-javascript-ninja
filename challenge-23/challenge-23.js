@@ -41,7 +41,7 @@
   });
   $buttonCE.addEventListener('click', handleClickCE, false);
   $buttonEqual.addEventListener('click', handleClickEqual, false);
-  
+
 
   function handleClickNumber() {
     $visor.value += this.value;
@@ -87,7 +87,7 @@
         case '/':
           return ( Number(firstValue) / Number(lastValue) ) + lastOperator;
       }
-      return accumulated + actual; 
+      return accumulated + actual;
     });
   }
 

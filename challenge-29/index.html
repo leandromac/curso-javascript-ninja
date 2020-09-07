@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeuPoçante</title>
+</head>
+
+<style>
+  img {
+    width: 150px;
+    height: auto;
+  }
+</style>
+
+<body>
+  <header>
+    <h1><span data-js="company-name"></span> - <span data-js="company-phone"></span></h1>
+  </header>
+
+  <form action="/" data-js="form-register">
+    <input type="text" data-js="url" placeholder="Foto (URL)" />
+    <input type="text" data-js="marca" placeholder="Marca" />
+    <input type="text" data-js="ano" placeholder="Ano" />
+    <input type="text" data-js="placa" placeholder="Placa" />
+    <input type="text" data-js="cor" placeholder="Cor" />
+    <button type="submit">Cadastrar</button>
+  </form>
+
+  <hr>
+
+  <table style="width:60%">
+    <thead>
+      <tr>
+          <td>Foto</td>
+          <td>Marca</td>
+          <td>Ano</td>
+          <td>Placa</td>
+          <td>Cor</td>
+      </tr>
+    </thead>
+    <tbody data-js="table-car">
+      <tr>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <script src="dom.js"></script>
+  <script src="challenge-29.js"></script>
+</body>
+</html>
